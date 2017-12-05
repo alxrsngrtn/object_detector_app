@@ -87,6 +87,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-src', '--source', dest='video_source', type=int,
                         default=0, help='Device index of the camera.')
+    parser.add_argument('-url', '--url', dest='video_url_source', type=str,
+                        help='URL for Video Stream (can\'t have url and src)')
     parser.add_argument('-wd', '--width', dest='width', type=int,
                         default=480, help='Width of the frames in the video stream.')
     parser.add_argument('-ht', '--height', dest='height', type=int,
@@ -104,7 +106,12 @@ if __name__ == '__main__':
     output_q = Queue(maxsize=args.queue_size)
     pool = Pool(args.num_workers, worker, (input_q, output_q))
 
-    video_capture = WebcamVideoStream(src=args.video_source,
+    source = args.video_url_source
+
+    if source is None:
+        source = args.video_source
+
+    video_capture = WebcamVideoStream(src=source,
                                       width=args.width,
                                       height=args.height).start()
     fps = FPS().start()
